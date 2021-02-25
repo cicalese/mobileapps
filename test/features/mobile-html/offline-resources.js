@@ -12,7 +12,7 @@ describe('mobile-html-offline-resources', function() {
 
     const metawikiApiUri = server.config.conf.services[0].conf.mobile_html_rest_api_base_uri
         .replace('{{host}}', 'localhost:8888')
-        .replace(new RegExp('(https|http)://'), '//');
+        .replace(/(https|http):\/\//, '//');
 
     const domain = 'en.wikipedia.org';
 
@@ -21,8 +21,8 @@ describe('mobile-html-offline-resources', function() {
         .replace('{{host}}', 'localhost:8888')
         .replace('{{domain}}', domain);
 
-    const localUri = (title, domain = 'en.wikipedia.org') => {
-        return `${server.config.uri}${domain}/v1/page/mobile-html-offline-resources/${title}`;
+    const localUri = (title, dmn = 'en.wikipedia.org') => {
+        return `${server.config.uri}${dmn}/v1/page/mobile-html-offline-resources/${title}`;
     };
 
     it('Response should be array with JS and CSS resources', () => {
@@ -37,13 +37,13 @@ describe('mobile-html-offline-resources', function() {
         ];
 
         return preq.get({ uri })
-        .then((res) => {
-            const response = res.body;
-            const headers = res.headers;
-            assert.ok(Array.isArray(response));
-            assert.deepEqual(response, expected);
-            assert.ok('cache-control' in headers);
-            assert.deepEqual(headers['cache-control'], 's-maxage=1209600, max-age=86400');
-        });
+            .then((res) => {
+                const response = res.body;
+                const headers = res.headers;
+                assert.ok(Array.isArray(response));
+                assert.deepEqual(response, expected);
+                assert.ok('cache-control' in headers);
+                assert.deepEqual(headers['cache-control'], 's-maxage=1209600, max-age=86400');
+            });
     });
 });

@@ -19,9 +19,9 @@ describe('mobile-sections', function() {
         const rev = 752758357; // belongs to Roald Dahl
         const uri = localUri(`${title}/${rev}`);
         return preq.get({ uri })
-        .catch((res) => {
-            assert.equal(res.status, 404);
-        });
+            .catch((res) => {
+                assert.equal(res.status, 404);
+            });
     });
 
     it('Malformed revision id gives bad request', () => {
@@ -29,41 +29,41 @@ describe('mobile-sections', function() {
         const rev = 'Reddit';
         const uri = localUri(`${title}/${rev}`);
         return preq.get({ uri })
-        .catch((res) => {
-            assert.equal(res.status, 400, 'Should be integer');
-        });
+            .catch((res) => {
+                assert.equal(res.status, 400, 'Should be integer');
+            });
     });
 
     it('Missing title should respond with 404', () => {
         const uri = localUri('weoiuyrxcmxn', 'test.wikipedia.org');
         return preq.get({ uri })
-        .then(() => {
-            assert.fail('expected an exception to be thrown');
-        }).catch((res) => {
-            assert.equal(res.status, 404);
-        });
+            .then(() => {
+                assert.fail('expected an exception to be thrown');
+            }).catch((res) => {
+                assert.equal(res.status, 404);
+            });
     });
 
     it('Sections/deep page should have a lead object with expected properties', () => {
         const title = 'Sections%2Fdeep';
         const uri = localUri(title, 'test.wikipedia.org');
         return preq.get({ uri })
-        .then((res) => {
-            const lead = res.body.lead;
-            const lastMod = lead.lastmodified;
-            const prot = lead.protection;
-            assert.equal(res.status, 200);
-            assert.ok(lastMod.startsWith('20'), `${lastMod} should start with 20`); // 2015-
-            assert.equal(lead.displaytitle, 'Sections/deep');
-            assert.equal(lead.wikibase_item, undefined);
-            assert.equal(lead.description, undefined);
-            assert.ok(prot.constructor === Object, 'lead.protection should be an Object');
-            assert.ok(!Object.keys(lead.protection).length, 'Page should not be protected');
-            assert.equal(lead.editable, true);
-            assert.ok(lead.sections.length >= 6, 'Expected at least six section elements');
-            assert.equal(lead.sections[0].id, 0);
-            assert.ok(lead.sections[0].text.length > 0, 'Expected text to be non-empty');
-        });
+            .then((res) => {
+                const lead = res.body.lead;
+                const lastMod = lead.lastmodified;
+                const prot = lead.protection;
+                assert.equal(res.status, 200);
+                assert.ok(lastMod.startsWith('20'), `${lastMod} should start with 20`); // 2015-
+                assert.equal(lead.displaytitle, 'Sections/deep');
+                assert.equal(lead.wikibase_item, undefined);
+                assert.equal(lead.description, undefined);
+                assert.ok(prot.constructor === Object, 'lead.protection should be an Object');
+                assert.ok(!Object.keys(lead.protection).length, 'Page should not be protected');
+                assert.equal(lead.editable, true);
+                assert.ok(lead.sections.length >= 6, 'Expected at least six section elements');
+                assert.equal(lead.sections[0].id, 0);
+                assert.ok(lead.sections[0].text.length > 0, 'Expected text to be non-empty');
+            });
     });
 
     it('en Main page should have a lead object with expected properties', () => {
@@ -98,11 +98,11 @@ describe('mobile-sections', function() {
         const uri = localUri(encodeURIComponent('User:BSitzmann_(WMF)/MCS/Test/Description'),
             'test.wikipedia.org');
         return preq.get({ uri })
-        .then((res) => {
-            const lead = res.body.lead;
-            assert.deepEqual(lead.description, 'funny description, haha');
-            assert.deepEqual(lead.description_source, 'local');
-        });
+            .then((res) => {
+                const lead = res.body.lead;
+                assert.deepEqual(lead.description, 'funny description, haha');
+                assert.deepEqual(lead.description_source, 'local');
+            });
     });
 
     it('Titles with special chars should not error out when parsing pronunciation files', () => {
@@ -124,16 +124,6 @@ describe('mobile-sections', function() {
     it("Page with known past 'text-decoration' error should load successfully", () => {
         const title = '%E6%9F%A5%E5%85%8B%C2%B7%E8%91%9B%E9%87%8C%E8%8A%AC%E7%B4%8D%E5%A5%87';
         const uri = localUri(title, 'zh.wikipedia.org');
-        return preq.get({ uri })
-            .then((res) => {
-                assert.equal(res.status, 200);
-            });
-    });
-
-    // TODO: remove skip
-    // beta cluster is down right now
-    it.skip('Beta cluster request should load successfully', () => {
-        const uri = localUri('Foobar', 'en.wikipedia.beta.wmflabs.org');
         return preq.get({ uri })
             .then((res) => {
                 assert.equal(res.status, 200);
@@ -164,7 +154,7 @@ describe('mobile-sections', function() {
 
     it('Any sections that contain references should have a reference flag', () => {
         const uri = localUri('Barack_Obama');
-        const sections = [ 'Notes and references', 'Notes', 'References', 'Further reading' ];
+        const sections = [ 'Notes and references', 'Notes', 'References', 'Further reading', 'Works cited' ];
         return preq.get({ uri })
             .then((res) => {
                 assert.equal(res.status, 200);

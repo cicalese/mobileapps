@@ -24,9 +24,9 @@ describe('diff', function() {
         return rsp.body;
     };
 
-    function buildRequestParams(buildUri, spec) {
+    function buildRequestParams(build, spec) {
         const requestParams = {
-            uri: buildUri(spec.uriPath()),
+            uri: build(spec.uriPath()),
             headers: spec.getHeaders()
         };
         if (spec.getPayloadFile()) {
@@ -35,10 +35,10 @@ describe('diff', function() {
         return requestParams;
     }
 
-    function writeExpectedResultsToFile(spec, rsp, formatOutput) {
+    function writeExpectedResultsToFile(spec, rsp, format) {
         // console.log(`mcs headers.etag: ${rsp.headers.etag}`);
         const processedResponse = spec.postProcessing(rsp);
-        fs.writeFileSync(spec.filePath(), formatOutput(processedResponse), 'utf8');
+        fs.writeFileSync(spec.filePath(), format(processedResponse), 'utf8');
     }
 
     function verifyResult(spec, rsp) {
@@ -54,14 +54,14 @@ describe('diff', function() {
                 switch (spec.getHttpMethod()) {
                 case 'GET':
                     return preq.get(requestParams)
-                    .then((rsp) => {
-                        return writeExpectedResultsToFile(spec, rsp, formatOutput);
-                    });
+                        .then((rsp) => {
+                            return writeExpectedResultsToFile(spec, rsp, formatOutput);
+                        });
                 case 'POST':
                     return preq.post(requestParams)
-                    .then((rsp) => {
-                        return writeExpectedResultsToFile(spec, rsp, formatOutput);
-                    });
+                        .then((rsp) => {
+                            return writeExpectedResultsToFile(spec, rsp, formatOutput);
+                        });
                 default:
                     assert.fail(`http method ${spec.getHttpMethod()} not implemented`);
                 }
@@ -69,7 +69,6 @@ describe('diff', function() {
         }
 
         after(() => {
-            /* eslint-disable no-console */
             console.log('\nConsider updating test-spec.js file with:');
             for (const spec of testSpec.TEST_SPECS) {
                 console.log(spec.generator());
@@ -83,18 +82,18 @@ describe('diff', function() {
             it(`${spec.testName()}`, () => {
                 const requestParams = buildRequestParams(buildUri, spec);
                 switch (spec.getHttpMethod()) {
-                    case 'GET':
-                        return preq.get(requestParams)
+                case 'GET':
+                    return preq.get(requestParams)
                         .then((rsp) => {
                             return verifyResult(spec, rsp);
                         });
-                    case 'POST':
-                        return preq.post(requestParams)
+                case 'POST':
+                    return preq.post(requestParams)
                         .then((rsp) => {
                             return verifyResult(spec, rsp);
                         });
-                    default:
-                        assert.fail(`http method ${spec.getHttpMethod()} not implemented`);
+                default:
+                    assert.fail(`http method ${spec.getHttpMethod()} not implemented`);
                 }
             });
         }

@@ -24,16 +24,16 @@ let app;
 /** Returns a promise to retrieve the page content from MW API mobileview */
 function pageContentForMainPagePromise(req) {
     return mwapi.getPageFromMobileview(req)
-    .then((response) => {
-        const page = response.body.mobileview;
-        return BBPromise.each(page.sections, (section) => {
-            const doc = domino.createDocument(section.text);
-            return preprocessParsoidHtml(doc, app.conf.processing_scripts.mainpage)
-            .then((doc) => {
-                section.text = doc.body.innerHTML;
-            });
-        }).then(() => page);
-    });
+        .then((response) => {
+            const page = response.body.mobileview;
+            return BBPromise.each(page.sections, (section) => {
+                const doc = domino.createDocument(section.text);
+                return preprocessParsoidHtml(doc, app.conf.processing_scripts.mainpage)
+                    .then((document) => {
+                        section.text = document.body.innerHTML;
+                    });
+            }).then(() => page);
+        });
 }
 
 function buildLeadSections(sections) {
@@ -145,10 +145,10 @@ function buildAll(input) {
  */
 function mainPageFixPromise(req, response) {
     return pageContentForMainPagePromise(req)
-    .then((mainPageContent) => {
-        response.page = mainPageContent;
-        return response;
-    });
+        .then((mainPageContent) => {
+            response.page = mainPageContent;
+            return response;
+        });
 }
 
 /**
@@ -167,13 +167,13 @@ function handleUserPagePromise(req, res) {
         meta: 'globaluserinfo',
         guiuser: req.params.title.split(':')[1]
     })
-    .then((resp) => {
-        const body = resp.body;
-        if (body.query && body.query.globaluserinfo) {
-            res.meta.userinfo = body.query.globaluserinfo;
-        }
-        return res;
-    });
+        .then((resp) => {
+            const body = resp.body;
+            if (body.query && body.query.globaluserinfo) {
+                res.meta.userinfo = body.query.globaluserinfo;
+            }
+            return res;
+        });
 }
 
 /**
@@ -195,14 +195,14 @@ function handleFilePagePromise(req, res) {
         iiurlwidth: mwapiConstants.LEAD_IMAGE_L,
         iirurlheight: mwapiConstants.LEAD_IMAGE_L * 0.75
     })
-    .then((resp) => {
-        const body = resp.body;
-        if (body.query && body.query.pages && body.query.pages.length) {
-            const ii = body.query.pages[0].imageinfo;
-            res.meta.imageinfo = ii ? ii[0] : ii;
-        }
-        return res;
-    });
+        .then((resp) => {
+            const body = resp.body;
+            if (body.query && body.query.pages && body.query.pages.length) {
+                const ii = body.query.pages[0].imageinfo;
+                res.meta.imageinfo = ii ? ii[0] : ii;
+            }
+            return res;
+        });
 }
 
 function isSubpage(title) {
@@ -233,29 +233,29 @@ function _handleNamespaceAndSpecialCases(req, res) {
  * Creates a raw object representing a page in preparation
  * for further massaging
  *
- * @param {!Object} app the application object
+ * @param {!Object} application the application object
  * @param {!Object} req the request object
  * @return {!BBPromise}
  */
-function _collectRawPageData(app, req) {
+function _collectRawPageData(application, req) {
     return mwapi.getSiteInfo(req)
-    .then(si => BBPromise.props({
-        page: parsoid.pageJsonPromise(app, req),
-        meta: mwapi.getMetadataForMobileSections(req, mwapiConstants.LEAD_IMAGE_XL),
-        title: mwapi.getTitleObj(req.params.title, si)
-    })).then((interimState) => {
-        return _handleNamespaceAndSpecialCases(req, interimState);
-    });
+        .then(si => BBPromise.props({
+            page: parsoid.pageJsonPromise(application, req),
+            meta: mwapi.getMetadataForMobileSections(req, mwapiConstants.LEAD_IMAGE_XL),
+            title: mwapi.getTitleObj(req.params.title, si)
+        })).then((interimState) => {
+            return _handleNamespaceAndSpecialCases(req, interimState);
+        });
 }
 
 /**
- * @param {!Object} app the application object
+ * @param {!Object} application the application object
  * @param {!Object} req the request object
  * @param {!Object} res the response object
  * @return {!BBPromise}
  */
-function buildAllResponse(app, req, res) {
-    return _collectRawPageData(app, req).then((response) => {
+function buildAllResponse(application, req, res) {
+    return _collectRawPageData(application, req).then((response) => {
         response = buildAll(response);
         res.status(200);
         mUtil.setETag(res, response.lead.revision, response.lead.tid);
@@ -273,12 +273,12 @@ function buildAllResponse(app, req, res) {
  * Builds an object which gives structure to the lead of an article
  * providing access to metadata.
  *
- * @param {!Object} app the application object
+ * @param {!Object} application the application object
  * @param {!Object} req the request object
  * @return {!BBPromise}
  */
-function buildLeadObject(app, req) {
-    return _collectRawPageData(app, req).then((lead) => {
+function buildLeadObject(application, req) {
+    return _collectRawPageData(application, req).then((lead) => {
         return buildLead(lead);
     });
 }
@@ -286,13 +286,13 @@ function buildLeadObject(app, req) {
 /**
  * Responds with the lead content of a page in structured form.
  *
- * @param {!Object} app the application object
+ * @param {!Object} application the application object
  * @param {!Object} req the request object
  * @param {!Object} res the response object
  * @return {!BBPromise}
  */
-function buildLeadResponse(app, req, res) {
-    return buildLeadObject(app, req).then((response) => {
+function buildLeadResponse(application, req, res) {
+    return buildLeadObject(application, req).then((response) => {
         res.status(200);
         mUtil.setETag(res, response.revision, response.tid);
         mUtil.setContentType(res, mUtil.CONTENT_TYPES.mobileSections);

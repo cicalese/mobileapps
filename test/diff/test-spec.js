@@ -47,8 +47,8 @@ class TestSpec {
      */
     project() {
         return this._domain
-                   .replace('.wikipedia.org', 'wiki')
-                   .replace('.wiktionary.org', 'wiktionary');
+            .replace('.wikipedia.org', 'wiki')
+            .replace('.wiktionary.org', 'wiktionary');
     }
 
     /**
@@ -126,8 +126,8 @@ class TestSpec {
     introduceFixedValuesForJSON(input) {
         input = JSON.parse(
             JSON.stringify(input)
-            .replace(/#mwt\d+/g, '#mwt_present')
-            .replace(/id=\\"mw[\w-]{2,3}\\"/g, 'id=\\"mw_id\\"')
+                .replace(/#mwt\d+/g, '#mwt_present')
+                .replace(/id=\\"mw[\w-]{2,3}\\"/g, 'id=\\"mw_id\\"')
         );
 
         if (input.lead) {
@@ -234,8 +234,6 @@ class TestSpec {
 }
 
 const TEST_SPECS = [
-    new TestSpec('meta.wikimedia.org', 'data/javascript/mobile', ['pagelib'], { suffix: 'js' }),
-    new TestSpec('meta.wikimedia.org', 'data/css/mobile', ['pagelib'], { suffix: 'css' }),
     new TestSpec('en.wikipedia.org', 'data/css/mobile', ['site'], { suffix: 'css' }),
 
     new TestSpec('en.wikipedia.org', 'page/mobile-sections', ['User:BSitzmann_(WMF)/MCS/Test/TitleLinkEncoding', '743079682']),

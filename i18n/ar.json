@@ -2,10 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Meno25",
+			"NEHAOUA",
+			"Sonic N800",
 			"Tala Ali"
 		]
 	},
-	"description-add-link-title": "إضافة وصف للعنوان",
+	"description-add-link-title": "إضافة وصف المقالة",
 	"article-read-more-title": "قراءة المزيد",
 	"table-title-other": "مزيد من المعلومات",
 	"page-edit-history": "عرض تاريخ التعديلات",
@@ -26,8 +28,8 @@
 	"article-edit-button": "عدل هذا القسم",
 	"article-edit-protected-button": "عدل القسم على الصفحة المحمية",
 	"article-section-expand": "وسع القسم",
-	"article-section-collapse": "طوي القسم",
+	"article-section-collapse": "طَيّ القسم",
 	"table-expand": "تمديد الجدول",
-	"table-collapse": "طوي الجدول",
+	"table-collapse": "طَيّ الجداول",
 	"references-preview-header": "معاينة المراجع"
 }

@@ -35,7 +35,6 @@ const DELAY = 10; // delay between requests in ms
 const topPagesDir = path.join(__dirname, '../private/page-lists/top-pages/wikipedia');
 const outDir = path.join(__dirname, '../private/compare-sections');
 
-let lang;
 let topPages;
 
 let oldDirName;
@@ -96,23 +95,23 @@ const compareExtracts = (filePrefix, oldExtract, newExtract, counter, title, rev
 
 const fetchExtract = (uri) => {
     return preq.get({ uri })
-    .then((response) => {
-        return BBPromise.delay(DELAY, getExtractHtml(response));
-    }).catch((err) => {
-        return BBPromise.resolve(`!!! ${err} "${uri}" !!!`);
-    });
+        .then((response) => {
+            return BBPromise.delay(DELAY, getExtractHtml(response));
+        }).catch((err) => {
+            return BBPromise.resolve(`!!! ${err} "${uri}" !!!`);
+        });
 };
 
 const fetchAndVerify = (filePrefix, title, rev, counter, lang) => {
     process.stdout.write('.');
     let newExtract;
     return fetchExtract(uriForNewSections(title, rev, lang))
-    .then((response) => {
-        newExtract = response;
-        return fetchExtract(uriForOldMobileSections(title, rev, lang));
-    }).then((oldExtract) => {
-        compareExtracts(filePrefix, oldExtract, newExtract, counter, title, rev);
-    });
+        .then((response) => {
+            newExtract = response;
+            return fetchExtract(uriForOldMobileSections(title, rev, lang));
+        }).then((oldExtract) => {
+            compareExtracts(filePrefix, oldExtract, newExtract, counter, title, rev);
+        });
 };
 
 const processOneLanguage = (lang) => {
@@ -126,10 +125,9 @@ const processOneLanguage = (lang) => {
 // MAIN
 const arg = process.argv[2];
 if (arg) {
-    lang = arg;
-    topPages = require(`${topPagesDir}/top-pages.${lang}.json`).items;
-    oldDirName = `${outDir}/v1/${lang}`;
-    newDirName = `${outDir}/v2/${lang}`;
+    topPages = require(`${topPagesDir}/top-pages.${arg}.json`).items;
+    oldDirName = `${outDir}/v1/${arg}`;
+    newDirName = `${outDir}/v2/${arg}`;
 
     mkdir.sync(oldDirName);
     mkdir.sync(newDirName);
@@ -137,5 +135,6 @@ if (arg) {
     processOneLanguage(arg);
 } else {
     process.stderr.write('Error: supply one language parameter (e.g. en)!\n');
+    // eslint-disable-next-line no-process-exit
     process.exit(-1);
 }
