@@ -15,7 +15,7 @@ const router = sUtil.router();
 /**
  * The main application object reported when this module is require()d
  */
-let app; 
+let app;
 
 function getPageSummary(req, title) {
     const path = `page/summary/${encodeURIComponent(title)}`;
@@ -63,17 +63,17 @@ router.get('/:project/:language/:title/:revision?', (req, res) => {
         const linkedEntities = structuredPage.output.linkedEntities;
         const keys = Object.keys(linkedEntities);
         return getEntitiesForTitles(req, keys, false).then((summariesByTitle) => {
-            let result = {};
+            const result = {};
             result.metadata = {};
             result.metadata.revision = structuredPage.metadata.revision;
             result.output = {};
-            let sections = [];
+            const sections = [];
             result.output.sections = sections;
             for (const section of structuredPage.output.sections) {
-                let s = {};
-                s.title = section.title;
-                sections.push(s);
-                s.links = [];
+                const newSection = {};
+                newSection.title = section.title;
+                sections.push(newSection);
+                newSection.links = [];
                 for (const paragraph of section.paragraphs) {
                     for (const fact of paragraph.facts) {
                         for (const link of fact.links ) {
@@ -84,7 +84,7 @@ router.get('/:project/:language/:title/:revision?', (req, res) => {
                                 || !summaryResponse.body.wikibase_item) {
                                 continue;
                             }
-                            s.links.push({
+                            newSection.links.push({
                                 title: title,
                                 wikidataItem: summaryResponse.body.wikibase_item
                             });
@@ -93,7 +93,7 @@ router.get('/:project/:language/:title/:revision?', (req, res) => {
                 }
             }
             return result;
-        })
+        });
     }).then((structuredPage) => {
         res.status(200);
         mUtil.setContentType(res, mUtil.CONTENT_TYPES.structuredPage);
