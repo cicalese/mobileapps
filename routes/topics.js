@@ -58,7 +58,7 @@ function factsPromise(app, req) {
  * GET /topics/v0/{title}{/revision}
  */
 router.get('/:project/:language/:title/:revision?', (req, res) => {
-    req.params.domain = 'en.wikipedia.org';
+    req.params.domain = req.params.language + '.' + req.params.project + '.org';
     return factsPromise(app, req).then((structuredPage) => {
         const linkedEntities = structuredPage.output.linkedEntities;
         const keys = Object.keys(linkedEntities);
